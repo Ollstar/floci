@@ -172,7 +172,7 @@ public class EksService implements TagHandler {
     nodegroup.setLabels(request.getLabels());
     nodegroup.setTags(request.getTags());
     nodegroup.setClientRequestToken(request.getClientRequestToken());
-    return createNodegroup(clusterName, nodegroup);
+    return createNodeGroup(clusterName, nodegroup);
   }
 
   public Nodegroup createNodegroup(String clusterName, Nodegroup request) {
