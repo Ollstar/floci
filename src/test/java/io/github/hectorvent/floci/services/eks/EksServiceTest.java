@@ -254,7 +254,7 @@ class EksServiceTest {
         assertEquals("my-eks-nodegroup", nodeGroup.getNodegroupName());
         assertTrue(nodeGroup.getNodegroupArn().contains("nodegroup/my-eks-cluster/my-eks-nodegroup"));
         assertEquals("my-eks-cluster", nodeGroup.getClusterName());
-        assertEquals(NodegroupStatus.CREATING, nodeGroup.getStatus());
+        assertEquals(NodegroupStatus.ACTIVE, nodeGroup.getStatus());
         assertEquals("ON_DEMAND", nodeGroup.getCapacityType());
         assertEquals(3, nodeGroup.getScalingConfig().getMaxSize());
         assertEquals(List.of("t3.medium"), nodeGroup.getInstanceTypes());
@@ -315,6 +315,28 @@ class EksServiceTest {
     }
 
     @Test
+    void createNodeGroupWithoutNodeRoleFails() {
+        createTestCluster("my-eks-cluster");
+        CreateNodeGroupRequest request = nodeGroupRequest("my-eks-nodegroup");
+        request.setNodeRole("");
+
+        AwsException ex = assertThrows(AwsException.class,
+                () -> eksService.createNodeGroup("my-eks-cluster", request));
+        assertEquals(400, ex.getHttpStatus());
+    }
+
+    @Test
+    void createNodeGroupWithoutSubnetsFails() {
+        createTestCluster("my-eks-cluster");
+        CreateNodeGroupRequest request = nodeGroupRequest("my-eks-nodegroup");
+        request.setSubnets(List.of());
+
+        AwsException ex = assertThrows(AwsException.class,
+                () -> eksService.createNodeGroup("my-eks-cluster", request));
+        assertEquals(400, ex.getHttpStatus());
+    }
+
+    @Test
     void describeAndDeleteNodeGroupNotFoundFail() {
         createTestCluster("my-eks-cluster");
 
@@ -337,9 +359,10 @@ class EksServiceTest {
         FargateProfile profile = eksService.createFargateProfile("my-eks-cluster", profileRequest);
 
         assertEquals("my-fargate-profile", profile.getFargateProfileName());
-        assertTrue(profile.getFargateProfileArn().contains("fargateprofile/my-eks-cluster/my-fargate-profile"));
+        assertTrue(profile.getFargateProfileArn()
+                .matches("arn:aws:eks:[^:]+:[0-9]+:fargateprofile/my-eks-cluster/my-fargate-profile/.+"));
         assertEquals("my-eks-cluster", profile.getClusterName());
-        assertEquals(FargateProfileStatus.CREATING, profile.getStatus());
+        assertEquals(FargateProfileStatus.ACTIVE, profile.getStatus());
         assertEquals("arn:aws:iam::000000000000:role/eks-fargate-role", profile.getPodExecutionRoleArn());
         assertEquals(List.of("subnet-0e2907431c9988b72", "subnet-04ad87f71c6e5ab4d"), profile.getSubnets());
         assertEquals("default", profile.getSelectors().getFirst().getNamespace());

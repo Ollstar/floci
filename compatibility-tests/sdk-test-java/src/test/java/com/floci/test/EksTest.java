@@ -165,7 +165,7 @@ class EksTest {
 
     @Test
     @Order(10)
-    void createNodegroup() {
+    void createNodeGroup() {
         CreateNodegroupResponse response = eks.createNodegroup(CreateNodegroupRequest.builder()
                 .clusterName(clusterName)
                 .nodegroupName(NODEGROUP)
@@ -179,14 +179,13 @@ class EksTest {
         assertThat(response.nodegroup().clusterName()).isEqualTo(clusterName);
         assertThat(response.nodegroup().nodegroupArn())
                 .contains("nodegroup/" + clusterName + "/" + NODEGROUP);
-        assertThat(response.nodegroup().status())
-                .isIn(NodegroupStatus.CREATING, NodegroupStatus.ACTIVE);
+        assertThat(response.nodegroup().status()).isEqualTo(NodegroupStatus.ACTIVE);
         assertThat(response.nodegroup().scalingConfig().desiredSize()).isEqualTo(2);
     }
 
     @Test
     @Order(11)
-    void listNodegroups() {
+    void listNodeGroups() {
         ListNodegroupsResponse response = eks.listNodegroups(ListNodegroupsRequest.builder()
                 .clusterName(clusterName).build());
         assertThat(response.nodegroups()).contains(NODEGROUP);
@@ -194,7 +193,7 @@ class EksTest {
 
     @Test
     @Order(12)
-    void describeNodegroup() {
+    void describeNodeGroup() {
         DescribeNodegroupResponse response = eks.describeNodegroup(DescribeNodegroupRequest.builder()
                 .clusterName(clusterName).nodegroupName(NODEGROUP).build());
         assertThat(response.nodegroup().nodegroupName()).isEqualTo(NODEGROUP);
@@ -212,7 +211,7 @@ class EksTest {
 
     @Test
     @Order(14)
-    void deleteNodegroup() {
+    void deleteNodeGroup() {
         DeleteNodegroupResponse response = eks.deleteNodegroup(DeleteNodegroupRequest.builder()
                 .clusterName(clusterName).nodegroupName(NODEGROUP).build());
         assertThat(response.nodegroup().status()).isEqualTo(NodegroupStatus.DELETING);
@@ -242,7 +241,7 @@ class EksTest {
         assertThat(createResponse.nodegroup().clusterName()).isEqualTo(clusterName);
         assertThat(createResponse.nodegroup().nodegroupName()).isEqualTo(nodegroupName);
         assertThat(createResponse.nodegroup().nodegroupArn()).contains("nodegroup/" + clusterName + "/" + nodegroupName);
-        assertThat(createResponse.nodegroup().status()).isEqualTo(NodegroupStatus.CREATING);
+        assertThat(createResponse.nodegroup().status()).isEqualTo(NodegroupStatus.ACTIVE);
         assertThat(createResponse.nodegroup().scalingConfig().desiredSize()).isEqualTo(2);
         assertThat(createResponse.nodegroup().labels()).containsEntry("workload", "api");
         assertThat(createResponse.nodegroup().tags()).containsEntry("env", "test");
@@ -293,8 +292,8 @@ class EksTest {
         assertThat(createResponse.fargateProfile().clusterName()).isEqualTo(clusterName);
         assertThat(createResponse.fargateProfile().fargateProfileName()).isEqualTo(fargateProfileName);
         assertThat(createResponse.fargateProfile().fargateProfileArn())
-                .contains("fargateprofile/" + clusterName + "/" + fargateProfileName);
-        assertThat(createResponse.fargateProfile().status()).isEqualTo(FargateProfileStatus.CREATING);
+                .matches("arn:aws:eks:[^:]+:[0-9]+:fargateprofile/" + clusterName + "/" + fargateProfileName + "/.+");
+        assertThat(createResponse.fargateProfile().status()).isEqualTo(FargateProfileStatus.ACTIVE);
         assertThat(createResponse.fargateProfile().selectors()).hasSize(1);
         assertThat(createResponse.fargateProfile().selectors().get(0).labels()).containsEntry("app", "api");
         assertThat(createResponse.fargateProfile().tags()).containsEntry("env", "test");

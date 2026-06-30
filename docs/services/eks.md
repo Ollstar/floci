@@ -116,7 +116,7 @@ arn:aws:eks:<region>:<accountId>:nodegroup/<clusterName>/<nodegroupName>/<id>
 Fargate profiles use:
 
 ```
-arn:aws:eks:<region>:<accountId>:fargateprofile/<clusterName>/<fargateProfileName>
+arn:aws:eks:<region>:<accountId>:fargateprofile/<clusterName>/<fargateProfileName>/<id>
 ```
 
 ## Examples
@@ -141,7 +141,7 @@ aws eks describe-cluster --name my-cluster
 aws eks list-clusters
 
 # Create a node group
-curl -s -X POST "$AWS_ENDPOINT_URL/clusters/my-cluster/nodegroups" \
+curl -s -X POST "$AWS_ENDPOINT_URL/clusters/my-cluster/node-groups" \
   -H "Content-Type: application/json" \
   -d '{
     "nodegroupName": "my-nodegroup",
@@ -156,13 +156,13 @@ curl -s -X POST "$AWS_ENDPOINT_URL/clusters/my-cluster/nodegroups" \
   }'
 
 # Describe the node group
-curl -s "$AWS_ENDPOINT_URL/clusters/my-cluster/nodegroups/my-nodegroup"
+curl -s "$AWS_ENDPOINT_URL/clusters/my-cluster/node-groups/my-nodegroup"
 
 # List node groups
-curl -s "$AWS_ENDPOINT_URL/clusters/my-cluster/nodegroups"
+curl -s "$AWS_ENDPOINT_URL/clusters/my-cluster/node-groups"
 
 # Delete the node group
-curl -s -X DELETE "$AWS_ENDPOINT_URL/clusters/my-cluster/nodegroups/my-nodegroup"
+curl -s -X DELETE "$AWS_ENDPOINT_URL/clusters/my-cluster/node-groups/my-nodegroup"
 
 # Create a Fargate profile
 curl -s -X POST "$AWS_ENDPOINT_URL/clusters/my-cluster/fargate-profiles" \
