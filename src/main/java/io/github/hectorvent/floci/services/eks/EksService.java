@@ -229,10 +229,6 @@ public class EksService implements TagHandler {
             "No nodegroup found for name: " + nodegroupName, 404));
   }
 
-  public Nodegroup describeNodegroup(String clusterName, String nodegroupName) {
-    return describeNodeGroup(clusterName, nodegroupName);
-  }
-
   public List<String> listNodeGroups(String clusterName) {
     describeCluster(clusterName);
     String prefix = clusterName + "/";
@@ -241,20 +237,12 @@ public class EksService implements TagHandler {
         .collect(Collectors.toList());
   }
 
-  public List<String> listNodegroups(String clusterName) {
-    return listNodeGroups(clusterName);
-  }
-
   public Nodegroup deleteNodeGroup(String clusterName, String nodegroupName) {
     Nodegroup nodeGroup = describeNodeGroup(clusterName, nodegroupName);
     nodeGroup.setStatus(NodegroupStatus.DELETING);
     nodeGroup.setModifiedAt(Instant.now());
     nodeGroupStorage.delete(nodeGroupKey(clusterName, nodegroupName));
     return nodeGroup;
-  }
-
-  public Nodegroup deleteNodegroup(String clusterName, String nodegroupName) {
-    return deleteNodeGroup(clusterName, nodegroupName);
   }
 
   public FargateProfile createFargateProfile(String clusterName, CreateFargateProfileRequest request) {
